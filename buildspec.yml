@@ -1,0 +1,18 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo Copying source files to the appropriate folders
+      - cd src
+      - sh build.sh
+  build:
+    commands:
+      - echo Build started on `date`
+      - cd ../textract-pipeline
+      - npm install
+  post_build:
+    commands:
+      - echo Deploying CDK
+      - npm install -g aws-cdk
+      - cdk bootstrap
+      - cdk deploy --require-approval 'never'
