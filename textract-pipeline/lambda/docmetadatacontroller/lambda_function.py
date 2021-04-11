@@ -10,12 +10,12 @@ class DecimalEncoder(json.JSONEncoder):
             return float(o)
         return super(DecimalEncoder, self).default(o)
 
-def getDocumentMetadata(id: str, doctype: str):
+def getDocumentMetadata(documentId: str):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(os.environ["DOCUMENT_METADATA_TABLE"])
 
     try:
-        response = table.get_item(Key={'id': id, 'doctype': doctype})
+        response = table.get_item(Key={'documentId': documentId})
         print(response)
         if "Item" in response:
             return response['Item']
@@ -42,36 +42,27 @@ def lambda_handler(event, context):
             
         if (path.startswith("/") and path != "/"):
             # Get the resource id removing "/" from the path
-            id = path[1:]
-
-            # Get the doctype from the query string
-            if (queryStringParameters and "doctype" in queryStringParameters):
-                doctype = queryStringParameters["doctype"]
-                data = getDocumentMetadata(id, doctype)
-                if (data != None):
-                    return {
-                        "statusCode": 200,
-                        "headers": {
-                            "Content-Type": "application/json"
-                        },
-                        "body": json.dumps(data, cls=DecimalEncoder)
-                    }
-                else:
-                    return {
-                        "statusCode": 404,
-                        "headers": {}
-                    }
+            documentId = path[1:]
+            data = getDocumentMetadata(documentId)
+            print("data: {}".format(data))
+            if (data != None):
+                return {
+                    "statusCode": 200,
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "body": json.dumps(data, cls=DecimalEncoder)
+                }
             else:
                 return {
-                    "statusCode": 400,
-                    "headers": {},
-                    "body": "Please specify the doctype in the query string e.g. GET /[id]?doctype=[doctype]"
+                    "statusCode": 404,
+                    "headers": {}
                 }
         else:
             return {
                 "statusCode": 400,
                 "headers": {},
-                "body": "Please specify the ID: GET /[id]"
+                "body": "Please specify the ID: GET /[documentId]"
             }
 
     except Exception as e:
