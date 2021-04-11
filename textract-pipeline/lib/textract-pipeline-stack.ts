@@ -279,7 +279,7 @@ export class TextractPipelineStack extends cdk.Stack {
       userPoolName: "default-userpool"
     });
     const resourceServer = new cognito.CfnUserPoolResourceServer(this, "CognitoResourceServer", {
-      identifier: "https://documentmetadata/",
+      identifier: "https://documentmetadata",
       name: "DocumentMetadataService",
       userPoolId: userPool.userPoolId,
       scopes: [
@@ -294,7 +294,7 @@ export class TextractPipelineStack extends cdk.Stack {
         flows: { 
           clientCredentials: true 
         },
-        scopes: [OAuthScope.custom('https://documentmetadata//read')]
+        scopes: [OAuthScope.custom('https://documentmetadata/read')]
       },
       generateSecret: true
     });
@@ -317,7 +317,7 @@ export class TextractPipelineStack extends cdk.Stack {
     document.addMethod("GET", getDocumentMetadataIntegration, {
       authorizationType: AuthorizationType.COGNITO,
       authorizer: { authorizerId: auth.ref },
-      authorizationScopes: ["https://documentmetadata//read"]
+      authorizationScopes: ["https://documentmetadata/read"]
     }); // GET /{id}
 
     //--------------
