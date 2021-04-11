@@ -36,7 +36,6 @@ export class TextractPipelineStack extends cdk.Stack {
       })
     );
 
-
     //**********S3 Batch Operations Role******************************
     const s3BatchOperationsRole = new iam.Role(this, 'S3BatchOperationsRole', {
       assumedBy: new iam.ServicePrincipal('batchoperations.s3.amazonaws.com')
@@ -270,7 +269,7 @@ export class TextractPipelineStack extends cdk.Stack {
       description: "This services serves the content from the output table from the Textract Document Processing stored in DynamoDB"
     });
 
-    const document = documentMetadataApi.root.addResource("{id}");
+    const document = documentMetadataApi.root.addResource("{documentId}");
     const getDocumentMetadataIntegration = new apigateway.LambdaIntegration(documentMetadataController);
 
     // Cognito User Pool
