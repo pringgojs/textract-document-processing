@@ -53,16 +53,15 @@ export class TextractPipelineStack extends cdk.Stack {
     //DynamoDB table with links to output in S3
     const documentsTable = new dynamodb.Table(this, 'DocumentsTable', {
       partitionKey: { name: 'documentId', type: dynamodb.AttributeType.STRING },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST
     });
 
     // Document metadata table
-    // The idea is to set id to hold either NIB or Nomor Hak while the rest of attributes can be different.
-    // The API will expose the GET with {id} as query parameter
     const documentMetadataTable = new dynamodb.Table(this, 'DocumentMetadataTable', {
-      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-      sortKey: { name: 'doctype', type: dynamodb.AttributeType.STRING },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      partitionKey: { name: 'documentId', type: dynamodb.AttributeType.STRING },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST
     });
 
     //**********SQS Queues*****************************
