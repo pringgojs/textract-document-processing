@@ -107,4 +107,4 @@ curl -X GET "${apigatewayendpoint}/${documentId}" -H "Content-Type: application/
 | lib/textract-pipeline-stack.ts | CDK code to define infrastrucure including IAM roles, Lambda functions, SQS queues etc. |
 
 ### CI/CD environment
-You can create a simple CodePipeline with CodeBuild to continuously deploy changes by using the `buildspec.yml` in the root directory.
+You can create a simple CodePipeline with CodeBuild to continuously deploy changes by using the `textract-pipeline/buildspec.yml` buildspec file.
