@@ -17,7 +17,7 @@ frontend:
   artifacts:
     baseDirectory: web-ui/build
     files:
-      - 'web-ui/**/*'
+      - '**/*'
   cache:
     paths:
       - web-ui/node_modules/**/*
