@@ -269,6 +269,7 @@ export class TextractPipelineStack extends cdk.Stack {
       description: "This services serves the content from the output table from the Textract Document Processing stored in DynamoDB"
     });
 
+    const documentRoot = documentMetadataApi.root;
     const document = documentMetadataApi.root.addResource("{documentId}");
     const getDocumentMetadataIntegration = new apigateway.LambdaIntegration(documentMetadataController);
 
@@ -312,6 +313,12 @@ export class TextractPipelineStack extends cdk.Stack {
     });
 
     // API Gateway GET method with authorizer
+    documentRoot.addMethod("GET", getDocumentMetadataIntegration, {
+      authorizationType: AuthorizationType.COGNITO,
+      authorizer: { authorizerId: auth.ref },
+      authorizationScopes: ["https://documentmetadata/read"]
+    });
+
     document.addMethod("GET", getDocumentMetadataIntegration, {
       authorizationType: AuthorizationType.COGNITO,
       authorizer: { authorizerId: auth.ref },
