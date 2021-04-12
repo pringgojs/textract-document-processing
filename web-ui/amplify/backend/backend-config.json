@@ -1,1 +1,10 @@
-{}
+{
+  "auth": {
+    "textractdocprocwebui99d37153": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  }
+}

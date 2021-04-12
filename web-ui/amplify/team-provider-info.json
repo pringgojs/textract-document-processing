@@ -10,6 +10,11 @@
       "StackName": "amplify-textractdocprocwebui-dev-114123",
       "StackId": "arn:aws:cloudformation:ap-southeast-1:986850167065:stack/amplify-textractdocprocwebui-dev-114123/57d1b090-9b49-11eb-b716-0aece2197ad4",
       "AmplifyAppId": "d1zsn85k4o5wah"
+    },
+    "categories": {
+      "auth": {
+        "textractdocprocwebui99d37153": {}
+      }
     }
   }
 }
