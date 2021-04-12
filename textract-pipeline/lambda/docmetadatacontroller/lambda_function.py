@@ -4,16 +4,38 @@ import json
 from decimal import Decimal
 from botocore.exceptions import ClientError
 
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table(os.environ["DOCUMENT_METADATA_TABLE"])
+
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, Decimal):
             return float(o)
         return super(DecimalEncoder, self).default(o)
 
-def getDocumentMetadata(documentId: str):
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table(os.environ["DOCUMENT_METADATA_TABLE"])
+def getAllDocumentMetadata():
+    try:
+        done = False
+        start_key = None
+        data = []
+        scan_kwargs = {}
+        while not done:
+            if start_key:
+                scan_kwargs['ExclusiveStartKey'] = start_key
+            response = table.scan(**scan_kwargs)
+            print(response)
+            if "Items" in response:
+                data = data + response['Items']
+            
+            start_key = response.get('LastEvaluatedKey', None)
+            done = start_key is None
+        
+        return data
 
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+
+def getDocumentMetadata(documentId: str):
     try:
         response = table.get_item(Key={'documentId': documentId})
         print(response)
@@ -59,11 +81,21 @@ def lambda_handler(event, context):
                     "headers": {}
                 }
         else:
-            return {
-                "statusCode": 400,
-                "headers": {},
-                "body": "Please specify the ID: GET /[documentId]"
-            }
+            data = getAllDocumentMetadata()
+            print("data: {}".format(data))
+            if (data != None):
+                return {
+                    "statusCode": 200,
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "body": json.dumps(data, cls=DecimalEncoder)
+                }
+            else:
+                return {
+                    "statusCode": 404,
+                    "headers": {}
+                }
 
     except Exception as e:
         return {
