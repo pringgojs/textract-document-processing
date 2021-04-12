@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-textractdocprocwebui-dev-114123-authRole",
+      "UnauthRoleArn": "arn:aws:iam::986850167065:role/amplify-textractdocprocwebui-dev-114123-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::986850167065:role/amplify-textractdocprocwebui-dev-114123-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-textractdocprocwebui-dev-114123-deployment",
+      "UnauthRoleName": "amplify-textractdocprocwebui-dev-114123-unauthRole",
+      "StackName": "amplify-textractdocprocwebui-dev-114123",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:986850167065:stack/amplify-textractdocprocwebui-dev-114123/57d1b090-9b49-11eb-b716-0aece2197ad4",
+      "AmplifyAppId": "d1zsn85k4o5wah"
+    }
+  }
+}
