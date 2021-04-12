@@ -1,10 +1,16 @@
 # Textract Document Processing
 
 ## Overview
-This project is derived from the [Large scale document processing with Amazon Textract](https://github.com/aws-samples/amazon-textract-serverless-large-scale-document-processing) as the base / foundation so all credits goes to the initial Contributor in the linked project page.
+Amazon Textract is a machine learning service that automatically extracts text, handwriting and data from scanned documents that goes beyond simple optical character recognition (OCR) to identify, understand, and extract data from forms and tables. Textract uses machine learning to read and process any type of document, accurately extracting text, handwriting, tables and other data without any manual effort. You can quickly automate document processing and take action on the information extracted whether it be automating loans processing or tax documents. Textract can extract the data in minutes vs. hours or days.
+
+This project leverages the form data extraction capability of Amazon Textract to automatically extract the form data from the uploaded documents and insert it as an item in the database to be retrieved and processed as required.
+
+For example, many businesses and institutions who are yet to transform their process to become more digitalized are often doing manual data entry for form-based information such as identity card, paper-based registration form, and others. This manual process consumes too much time and is not scalable. The project is designed to improve the process by automating the manual process with the helps of review from the automated verification based on the business logic, as well as human verification.
 
 ## Architecture
-The following is the high-level architecture diagram.
+This project is derived from the [Large scale document processing with Amazon Textract](https://github.com/aws-samples/amazon-textract-serverless-large-scale-document-processing) as the base / foundation so all credits goes to the initial Contributor in the linked project page.
+
+The following is the high-level architecture diagram. It is implemented using AWS Serverless technology.
 
 ![Diagram](diagram.jpg)
 
