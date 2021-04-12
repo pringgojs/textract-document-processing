@@ -10,7 +10,6 @@ frontend:
   phases:
     preBuild:
       commands:
-        - cd web-ui
         - npm ci
     build:
       commands:
