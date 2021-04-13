@@ -394,5 +394,11 @@ export class TextractPipelineStack extends cdk.Stack {
     new CfnOutput(this, "IdentityPoolId", {
       value: identityPool.ref,
     });
+    new CfnOutput(this, "DocumentsBucketName", {
+      value: contentBucket.bucketName
+    });
+    new CfnOutput(this, "Region", {
+      value: this.region
+    });
   }
 }
