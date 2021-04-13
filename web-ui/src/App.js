@@ -16,6 +16,7 @@ const styles = theme => ({
   },
   paper: {
     padding: theme.spacing(1),
+    'margin-bottom': theme.spacing(1),
     color: theme.palette.text.secondary,
   },
   button: {
@@ -111,7 +112,7 @@ class App extends Component {
               AWS Textract Document Processing
             </Typography>
             <Button className={classes.button} variant="contained" color="default" onClick={() => this.refreshDocumentMetadata()}>
-              <RefreshIcon></RefreshIcon>Refresh
+              <RefreshIcon></RefreshIcon>Refresh Data
             </Button>
             <AmplifySignOut />
           </Toolbar>
@@ -120,18 +121,36 @@ class App extends Component {
           <Grid container spacing={1}>
             <Grid item xs={12} sm={4}>
               <Paper className={classes.paper}>
-                <Typography variant="subtitle1">
-                  File Upload Progress is {this.state.progress}% - {this.state.uploadState}
+                <Typography variant="h6">
+                  Document Upload for Processing
                 </Typography>
                 <Button className={classes.button} variant="contained" component="label">
                   {this.state.selectedFileName}
                   <input type="file" onChange={this.handleFileInput} hidden />
                 </Button>
                 <Button className={classes.button} variant="contained" color="primary" onClick={() => this.uploadFile(this.state.selectedFile)}>Upload to S3</Button>
+                <Typography variant="subtitle1">
+                  File Upload Progress is {this.state.progress}% - {this.state.uploadState}
+                </Typography>
+              </Paper>
+              <Paper className={classes.paper}>
+                <Typography variant="h6">
+                  Document Processing Status
+                </Typography>
+                TODO
+              </Paper>
+              <Paper className={classes.paper}>
+                <Typography variant="h6">
+                  Github Repository / Code Reference
+                </Typography>
+                <a target="_blank" rel="noopener noreferrer" href="https://github.com/hendryaw/textract-document-processing">https://github.com/hendryaw/textract-document-processing</a>
               </Paper>
             </Grid>
             <Grid item xs={12} sm={8}>
               <Paper className={classes.paper}>
+                <Typography variant="h4">
+                  Forms Extraction Results in Database
+                </Typography>
                 <ReactJson src={this.state.documentMetadataItems} collapsed={2} enableClipboard={false} displayDataTypes={false} />
               </Paper>
             </Grid>
