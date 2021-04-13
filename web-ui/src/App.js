@@ -4,6 +4,7 @@ import { Auth } from 'aws-amplify';
 import AWS from 'aws-sdk';
 import { Button, Box, Container, Paper, Grid, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import config from "./config.json";
 
 const styles = theme => ({
   root: {
@@ -16,8 +17,8 @@ const styles = theme => ({
   }
 });
 
-const s3DocumentsBucketName ='textractdocumentprocessin-documentsbucket9ec9deb9-1bss6ew8q1fpy';
-const s3DocumentsBucketRegion ='ap-southeast-1';
+const s3DocumentsBucketName = config.DOCUMENTS_UPLOAD_BUCKET.BUCKET_NAME;
+const s3DocumentsBucketRegion = config.DOCUMENTS_UPLOAD_BUCKET.BUCKET_REGION;
 
 class App extends Component {
   constructor(props) {
