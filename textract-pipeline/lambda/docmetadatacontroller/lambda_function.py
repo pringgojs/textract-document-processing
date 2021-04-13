@@ -58,7 +58,9 @@ def lambda_handler(event, context):
         if (method != "GET"):
             return {
                 "statusCode": 400,
-                "headers": {},
+                "headers": {
+                    "Access-Control-Allow-Origin": "*"
+                },
                 "body": "We only accept GET"
             }
             
@@ -71,7 +73,8 @@ def lambda_handler(event, context):
                 return {
                     "statusCode": 200,
                     "headers": {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin": "*"
                     },
                     "body": json.dumps(data, cls=DecimalEncoder)
                 }
@@ -87,21 +90,25 @@ def lambda_handler(event, context):
                 return {
                     "statusCode": 200,
                     "headers": {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin": "*"
                     },
                     "body": json.dumps(data, cls=DecimalEncoder)
                 }
             else:
                 return {
                     "statusCode": 404,
-                    "headers": {}
+                    "headers": {
+                        "Access-Control-Allow-Origin": "*"
+                    }
                 }
 
     except Exception as e:
         return {
             "statusCode": 500,
             "headers": {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
             },
             "body": json.dumps({ 'errorMessage': str(e) })
         }

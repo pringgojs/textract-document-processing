@@ -273,7 +273,10 @@ export class TextractPipelineStack extends cdk.Stack {
 
     const documentMetadataApi = new apigateway.RestApi(this, "document-metadata-api", {
       restApiName: "Document Metadata Service",
-      description: "This services serves the content from the output table from the Textract Document Processing stored in DynamoDB"
+      description: "This services serves the content from the output table from the Textract Document Processing stored in DynamoDB",
+      defaultCorsPreflightOptions: {
+        allowOrigins: apigateway.Cors.ALL_ORIGINS
+      }
     });
 
     const documentRoot = documentMetadataApi.root;
@@ -286,8 +289,23 @@ export class TextractPipelineStack extends cdk.Stack {
       autoVerify: { email: true },
       signInAliases: { email: true }
     });
+    userPool.addDomain("CognitoDomain", {
+      cognitoDomain: {
+        domainPrefix: `documentmetadata-userpool-${this.account}`
+      }
+    });
     const webClient = userPool.addClient('WebUserPoolClient', {
-      generateSecret: false
+      generateSecret: false,
+      oAuth: {
+        scopes: [
+          OAuthScope.custom('https://documentmetadata/read'), 
+          OAuthScope.PROFILE,
+          OAuthScope.PHONE,
+          OAuthScope.EMAIL,
+          OAuthScope.OPENID,
+          OAuthScope.COGNITO_ADMIN
+        ]
+      }
     });
     const identityPool = new cognito.CfnIdentityPool(this, "IdentityPool", {
       allowUnauthenticatedIdentities: false,
@@ -319,53 +337,19 @@ export class TextractPipelineStack extends cdk.Stack {
       roles: { authenticated: identityPoolAuthRole.roleArn },
     });
 
-    // Cognito App Client for Client Credentials Auth Flow.
-    const resourceServer = new cognito.CfnUserPoolResourceServer(this, "CognitoResourceServer", {
-      identifier: "https://documentmetadata",
-      name: "DocumentMetadataService",
-      userPoolId: userPool.userPoolId,
-      scopes: [
-        {
-          scopeDescription: "Allow read",
-          scopeName: "read",
-        },
-      ],
-    });
-    const appClient = userPool.addClient('AppUserPoolClient', {
-      oAuth: {
-        flows: { 
-          clientCredentials: true 
-        },
-        scopes: [OAuthScope.custom('https://documentmetadata/read')]
-      },
-      generateSecret: true
-    });
-    userPool.addDomain("CognitoDomain", {
-      cognitoDomain: {
-        domainPrefix: `documentmetadata-userpool-${this.account}`
-      }
-    });
-
-    // Cognito Authorizer for API Gateway
-    const auth = new apigateway.CfnAuthorizer(this, 'APIGatewayAuthorizer', {
-      name: 'document-metadata-authorizer',
-      identitySource: 'method.request.header.Authorization',
-      providerArns: [userPool.userPoolArn],
-      restApiId: documentMetadataApi.restApiId,
-      type: AuthorizationType.COGNITO,
+    const auth = new apigateway.CognitoUserPoolsAuthorizer(this, 'ApiAuthorizer', {
+      cognitoUserPools: [ userPool ]
     });
 
     // API Gateway GET method with authorizer
     documentRoot.addMethod("GET", getDocumentMetadataIntegration, {
       authorizationType: AuthorizationType.COGNITO,
-      authorizer: { authorizerId: auth.ref },
-      authorizationScopes: ["https://documentmetadata/read"]
-    });
+      authorizer: auth
+    }); // GET /
 
     document.addMethod("GET", getDocumentMetadataIntegration, {
       authorizationType: AuthorizationType.COGNITO,
-      authorizer: { authorizerId: auth.ref },
-      authorizationScopes: ["https://documentmetadata/read"]
+      authorizer: auth
     }); // GET /{id}
 
     //--------------
