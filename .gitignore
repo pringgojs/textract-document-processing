@@ -1,11 +1,11 @@
 .DS_Store
-
 .vscode
 
-*.js
-!jest.config.js
-*.d.ts
-node_modules
+# textract-pipeline directory
+textract-pipeline/*.js
+textract-pipeline/!jest.config.js
+textract-pipeline/*.d.ts
+textract-pipeline/node_modules
 
 # CDK asset staging directory
 .cdk.staging

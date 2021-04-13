@@ -1,0 +1,14 @@
+{
+    "AMPLIFY": {
+        "AUTH": {
+            "REGION": "",
+            "IDENTITY_POOL_ID": "",
+            "USER_POOL_ID": "",
+            "USER_POOL_WEB_CLIENT_ID": ""
+        }
+    },
+    "DOCUMENTS_UPLOAD_BUCKET": {
+        "BUCKET_NAME": "",
+        "BUCKET_REGION": ""
+    }
+}
