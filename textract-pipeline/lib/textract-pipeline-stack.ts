@@ -13,7 +13,7 @@ import apigateway = require("@aws-cdk/aws-apigateway");
 import {LambdaFunction} from "@aws-cdk/aws-events-targets";
 import { AuthorizationType } from '@aws-cdk/aws-apigateway';
 import { OAuthScope, ResourceServerScope } from '@aws-cdk/aws-cognito';
-import { Stack } from '@aws-cdk/core';
+import { CfnOutput, Stack } from '@aws-cdk/core';
 
 export class TextractPipelineStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -44,6 +44,13 @@ export class TextractPipelineStack extends cdk.Stack {
     //**********S3 Bucket******************************
     //S3 bucket for input documents and output
     const contentBucket = new s3.Bucket(this, 'DocumentsBucket', { versioned: false});
+    // Allow direct file upload from the web client.
+    contentBucket.addCorsRule({
+      allowedHeaders: [ "*" ],
+      allowedMethods: [ s3.HttpMethods.HEAD, s3.HttpMethods.GET, s3.HttpMethods.PUT, s3.HttpMethods.POST, s3.HttpMethods.DELETE ],
+      allowedOrigins: [ "*" ],
+      exposedHeaders: [ "ETag" ]
+    });
 
     const inventoryAndLogsBucket = new s3.Bucket(this, 'InventoryAndLogsBucket', { versioned: false});
     inventoryAndLogsBucket.grantReadWrite(s3BatchOperationsRole)
@@ -273,10 +280,46 @@ export class TextractPipelineStack extends cdk.Stack {
     const document = documentMetadataApi.root.addResource("{documentId}");
     const getDocumentMetadataIntegration = new apigateway.LambdaIntegration(documentMetadataController);
 
-    // Cognito User Pool
+    // Cognito User Pool and Identity Pool
     const userPool = new cognito.UserPool(this, "UserPool", {
-      userPoolName: "default-userpool"
+      selfSignUpEnabled: true,
+      autoVerify: { email: true },
+      signInAliases: { email: true }
     });
+    const webClient = userPool.addClient('WebUserPoolClient', {
+      generateSecret: false
+    });
+    const identityPool = new cognito.CfnIdentityPool(this, "IdentityPool", {
+      allowUnauthenticatedIdentities: false,
+      cognitoIdentityProviders: [
+        {
+          clientId: webClient.userPoolClientId,
+          providerName: userPool.userPoolProviderName,
+        },
+      ],
+    });
+    // IAM role used for Identity Pool authenticated users
+    const identityPoolAuthRole = new iam.Role(this, "CognitoDefaultAuthenticatedRole", {
+      assumedBy: new iam.FederatedPrincipal(
+        "cognito-identity.amazonaws.com",
+        {
+          StringEquals: {
+            "cognito-identity.amazonaws.com:aud": identityPool.ref,
+          },
+          "ForAnyValue:StringLike": {
+            "cognito-identity.amazonaws.com:amr": "authenticated",
+          },
+        },
+        "sts:AssumeRoleWithWebIdentity"
+      ),
+    });
+    contentBucket.grantPut(identityPoolAuthRole);
+    new cognito.CfnIdentityPoolRoleAttachment(this, "IdentityPoolRoleAttachment", {
+      identityPoolId: identityPool.ref,
+      roles: { authenticated: identityPoolAuthRole.roleArn },
+    });
+
+    // Cognito App Client for Client Credentials Auth Flow.
     const resourceServer = new cognito.CfnUserPoolResourceServer(this, "CognitoResourceServer", {
       identifier: "https://documentmetadata",
       name: "DocumentMetadataService",
@@ -288,7 +331,7 @@ export class TextractPipelineStack extends cdk.Stack {
         },
       ],
     });
-    const client = userPool.addClient('appclient', {
+    const appClient = userPool.addClient('AppUserPoolClient', {
       oAuth: {
         flows: { 
           clientCredentials: true 
@@ -340,5 +383,16 @@ export class TextractPipelineStack extends cdk.Stack {
     sanityChecker.addEventSource(new DynamoEventSource(documentMetadataTable, {
       startingPosition: lambda.StartingPosition.TRIM_HORIZON
     }));
+
+    // Output Values
+    new CfnOutput(this, "UserPoolId", {
+      value: userPool.userPoolId,
+    });
+    new CfnOutput(this, "UserPoolClientId", {
+      value: webClient.userPoolClientId,
+    });
+    new CfnOutput(this, "IdentityPoolId", {
+      value: identityPool.ref,
+    });
   }
 }
