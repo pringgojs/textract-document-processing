@@ -45,35 +45,35 @@ class App extends Component {
     }
   }
 
-  render() {
-    const handleFileInput = (e) => {
-        this.setState({ selectedFile: e.target.files[0] });
-    };
+  handleFileInput = (e) => {
+    this.setState({ selectedFile: e.target.files[0] });
+  };
 
-    const uploadFile = async (file) => {
-      if (file == null) {
-        return;
-      }
-
-      var upload = new AWS.S3.ManagedUpload({
-        params: {
-          Body: file,
-          Bucket: s3DocumentsBucketName,
-          Key: file.name
-        }
-      });
-
-      try {
-        await upload.on('httpUploadProgress', (evt) => {
-          this.setState({ progress: Math.round((evt.loaded / evt.total) * 100)});
-        }).promise();
-        this.setState({ uploadState: "Succeed"});
-      } catch(e) {
-        console.log(e);
-        this.setState({ uploadState: "Failed"});
-      }
+  uploadFile = async (file) => {
+    if (file == null) {
+      return;
     }
 
+    var upload = new AWS.S3.ManagedUpload({
+      params: {
+        Body: file,
+        Bucket: s3DocumentsBucketName,
+        Key: file.name
+      }
+    });
+
+    try {
+      await upload.on('httpUploadProgress', (evt) => {
+        this.setState({ progress: Math.round((evt.loaded / evt.total) * 100)});
+      }).promise();
+      this.setState({ uploadState: "Succeed"});
+    } catch(e) {
+      console.log(e);
+      this.setState({ uploadState: "Failed"});
+    }
+  }
+
+  render() {
     const { classes } = this.props;
     return (
       <React.Fragment>
@@ -88,8 +88,8 @@ class App extends Component {
                   <Typography variant="subtitle1">
                     File Upload Progress is {this.state.progress}% - {this.state.uploadState}
                   </Typography>
-                  <input type="file" onChange={handleFileInput}/>
-                  <Button variant="contained" onClick={() => uploadFile(this.state.selectedFile)}>Upload to S3</Button>
+                  <input type="file" onChange={this.handleFileInput}/>
+                  <Button variant="contained" onClick={() => this.uploadFile(this.state.selectedFile)}>Upload to S3</Button>
                 </Paper>
               </Grid>
               <Grid item xs={12} sm={8}>
