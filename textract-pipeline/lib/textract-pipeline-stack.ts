@@ -298,7 +298,6 @@ export class TextractPipelineStack extends cdk.Stack {
       generateSecret: false,
       oAuth: {
         scopes: [
-          OAuthScope.custom('https://documentmetadata/read'), 
           OAuthScope.PROFILE,
           OAuthScope.PHONE,
           OAuthScope.EMAIL,
