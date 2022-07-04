@@ -7,6 +7,8 @@ import Popup from "reactjs-popup";
 
 import "reactjs-popup/dist/index.css";
 import {
+  Backdrop,
+  Fade,
   Container,
   Table,
   TableBody,
@@ -27,7 +29,7 @@ import RefreshIcon from "@material-ui/icons/Refresh";
 import { withStyles, ThemeProvider } from "@material-ui/core/styles";
 import ReactJson from "react-json-view";
 import { createTheme } from "@material-ui/core/styles";
-
+import { makeStyles } from "@material-ui/core/styles";
 import config from "./config.json";
 
 const styleModal = {
@@ -55,11 +57,23 @@ const styles = (theme) => ({
     "margin-bottom": theme.spacing(1),
     color: theme.palette.text.secondary,
   },
+  paperModal: {
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+    maxWidth: 800,
+  },
   button: {
     margin: theme.spacing(1),
   },
   title: {
     flexGrow: 1,
+  },
+  modal: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
@@ -288,71 +302,81 @@ class App extends Component {
             </Paper>
           </Box>
 
+          {/* Modal */}
           <Modal
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+            className={classes.modal}
             open={this.state.modalOpen}
             onClose={this.handleModalClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+              timeout: 500,
+            }}
           >
-            <Box sx={styleModal}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Tabel perbandingan data sertifikat tanah
-              </Typography>
-
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 300 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>
-                        <b>DESKRIPSI</b>
-                      </TableCell>
-                      <TableCell align="left">
-                        <b>HASIL UPLOAD</b>
-                      </TableCell>
-                      <TableCell align="left">
-                        <b>DATABASE</b>
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {this.state.tableBandingkan.map((header, index) => (
+            <Fade in={this.state.modalOpen}>
+              <div className={classes.paperModal}>
+                <h2 id="transition-modal-title">
+                  PERBANDINGAN DATA HASIL UPLOAD DENGAN DATA YANG ADA DI
+                  DATABASE DENGAN NIB YANG SAMA
+                </h2>
+                <TableContainer component={Paper}>
+                  <Table sx={{ minWidth: 300 }} aria-label="simple table">
+                    <TableHead>
                       <TableRow>
                         <TableCell>
-                          <b>{header.toUpperCase()}</b>
+                          <b>DESKRIPSI</b>
                         </TableCell>
                         <TableCell align="left">
-                          {this.state.detailScan === null
-                            ? null
-                            : this.state.detailScan[header]}
+                          <b>HASIL UPLOAD</b>
                         </TableCell>
-
-                        {this.state.detailScan && this.state.detailDatabase ? (
-                          this.state.detailDatabase[header] !==
-                          this.state.detailScan[header] ? (
-                            <TableCell
-                              align="left"
-                              style={{ backgroundColor: "red" }}
-                            >
-                              {this.state.detailDatabase === null ? null : (
-                                <div>{this.state.detailDatabase[header]}</div>
-                              )}
-                            </TableCell>
-                          ) : (
-                            <TableCell align="left">
-                              {this.state.detailDatabase === null ? null : (
-                                <div>{this.state.detailDatabase[header]}</div>
-                              )}
-                            </TableCell>
-                          )
-                        ) : (
-                          ""
-                        )}
+                        <TableCell align="left">
+                          <b>DATABASE</b>
+                        </TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Box>
+                    </TableHead>
+                    <TableBody>
+                      {this.state.tableBandingkan.map((header, index) => (
+                        <TableRow>
+                          <TableCell>
+                            <b>{header.toUpperCase()}</b>
+                          </TableCell>
+                          <TableCell align="left">
+                            {this.state.detailScan === null
+                              ? null
+                              : this.state.detailScan[header]}
+                          </TableCell>
+
+                          {this.state.detailScan &&
+                          this.state.detailDatabase ? (
+                            this.state.detailDatabase[header] !==
+                            this.state.detailScan[header] ? (
+                              <TableCell
+                                align="left"
+                                style={{ backgroundColor: "red" }}
+                              >
+                                {this.state.detailDatabase === null ? null : (
+                                  <div>{this.state.detailDatabase[header]}</div>
+                                )}
+                              </TableCell>
+                            ) : (
+                              <TableCell align="left">
+                                {this.state.detailDatabase === null ? null : (
+                                  <div>{this.state.detailDatabase[header]}</div>
+                                )}
+                              </TableCell>
+                            )
+                          ) : (
+                            ""
+                          )}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
+            </Fade>
           </Modal>
         </ThemeProvider>
       </div>
