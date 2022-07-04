@@ -6,6 +6,7 @@ textract-pipeline/*.js
 textract-pipeline/!jest.config.js
 textract-pipeline/*.d.ts
 textract-pipeline/node_modules
+textract-pipeline/textractcf
 
 # CDK asset staging directory
 .cdk.staging

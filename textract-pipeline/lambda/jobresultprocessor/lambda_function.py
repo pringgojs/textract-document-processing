@@ -45,6 +45,28 @@ def getJobResults(api, jobId):
 
     return pages
 
+def checkKeyValue(key_name):
+    keyname = ""
+    if (key_name.lower().find('kelurahan') != -1 or key_name.lower().find('desa') != -1):
+        keyname = "DESA_KELURAHAN"
+    if (key_name.lower().find('nib') != -1):
+        keyname = "NIB"
+    if (key_name.lower().find('propinsi') != -1):
+        keyname = "PROPINSI"
+    if (key_name.lower().find('kabupaten') != -1 or key_name.lower().find('kotamadya') != -1):
+        keyname = "KABUPATEN_KOTAMADYA"
+    if (key_name.lower().find('kecamatan') != -1):
+        keyname = "KECAMATAN"
+    if (key_name.lower().find('luas') != -1):
+        keyname = "LUAS"
+    if (key_name.lower().find('kotak') != -1):
+        keyname = "KOTAK"
+    if (key_name.lower().find('hak') != -1):
+        keyname = "HAK"
+    if (key_name.lower().find('jalan/persil') != -1):
+        keyname = "NAMA_JALAN_PERSIL"
+    return keyname
+
 def processRequest(request):
 
     output = ""
@@ -77,34 +99,38 @@ def processRequest(request):
         }
 
         allText = ""
+        keyname = ""
         kvsets = []
         for page in document.pages:
-            allText = allText + page.text
+            #allText = allText + " " + page.text
             if (detectForms):
                 for field in page.form.fields:
                     kvset  = {}
-                    if(field.key):
-                        kvset["key"] = field.key.text
-                        kvset["key_position_top"] = Decimal(str(field.key.geometry.boundingBox.top))
-                        kvset["key_position_left"] = Decimal(str(field.key.geometry.boundingBox.left))
-                        kvset["key_position_width"] = Decimal(str(field.key.geometry.boundingBox.width))
-                        kvset["key_position_height"] = Decimal(str(field.key.geometry.boundingBox.height))
-                        kvset["key_confidence"] = Decimal(str(field.key.confidence))
+                    keyname = checkKeyValue(field.key.text)
+                    
+                    if len(keyname) > 2:
+                        #kvset["key"] = field.key.text
+                        #kvset["key_position_top"] = Decimal(str(field.key.geometry.boundingBox.top))
+                        #kvset["key_position_left"] = Decimal(str(field.key.geometry.boundingBox.left))
+                        #kvset["key_position_width"] = Decimal(str(field.key.geometry.boundingBox.width))
+                        #kvset["key_position_height"] = Decimal(str(field.key.geometry.boundingBox.height))
+                        #kvset["key_confidence"] = Decimal(str(field.key.confidence))
 
                         if(field.value):
-                            documentItem[field.key.text] = field.value.text
-                            kvset["value"] = field.value.text
-                            kvset["value_position_top"] = Decimal(str(field.value.geometry.boundingBox.top))
-                            kvset["value_position_left"] = Decimal(str(field.value.geometry.boundingBox.left))
-                            kvset["value_position_width"] = Decimal(str(field.value.geometry.boundingBox.width))
-                            kvset["value_position_height"] = Decimal(str(field.value.geometry.boundingBox.height))
-                            kvset["value_confidence"] = Decimal(str(field.value.confidence))
-                        else:
-                            documentItem[field.key.text] = ""
-                            kvset["value"] = ""
-                    kvsets.append(kvset)
-        documentItem["allText"] = allText
-        documentItem['forms'] = kvsets
+                            documentItem[keyname] = field.value.text
+                            #documentItem[field.key.text] = field.value.text
+                            #kvset["value"] = field.value.text
+                            #kvset["value_position_top"] = Decimal(str(field.value.geometry.boundingBox.top))
+                            #kvset["value_position_left"] = Decimal(str(field.value.geometry.boundingBox.left))
+                            #kvset["value_position_width"] = Decimal(str(field.value.geometry.boundingBox.width))
+                            #kvset["value_position_height"] = Decimal(str(field.value.geometry.boundingBox.height))
+                            #kvset["value_confidence"] = Decimal(str(field.value.confidence))
+                        #else:
+                            #documentItem[field.key.text] = ""
+                            #kvset["value"] = ""
+                    #kvsets.append(kvset)
+        #documentItem["allText"] = allText
+        #documentItem['forms'] = kvsets
 
         print("DEBUG - documentItem: {}".format(documentItem))
 

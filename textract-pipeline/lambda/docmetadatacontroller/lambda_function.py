@@ -18,13 +18,13 @@ def getAllDocumentMetadata():
         done = False
         start_key = None
         data = []
-        scan_kwargs = {}
         while not done:
             if start_key:
                 scan_kwargs['ExclusiveStartKey'] = start_key
-            response = table.scan(**scan_kwargs)
+            response = table.scan(AttributesToGet=['HAK','NAMA_JALAN_PERSIL','DESA_KELURAHAN','KABUPATEN_KOTAMADYA','LUAS','KOTAK','PROPINSI','NIB','KECAMATAN'])
             print(response)
             if "Items" in response:
+                
                 data = data + response['Items']
             
             start_key = response.get('LastEvaluatedKey', None)

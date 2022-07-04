@@ -1,17 +1,17 @@
 {
-    "AMPLIFY": {
-        "AUTH": {
-            "REGION": "",
-            "IDENTITY_POOL_ID": "",
-            "USER_POOL_ID": "",
-            "USER_POOL_WEB_CLIENT_ID": ""
-        },
-        "API": {
-            "DOCUMENT_METADATA_SERVICE_ENDPOINT": ""
-        }
+  "AMPLIFY": {
+    "AUTH": {
+      "REGION": "ap-southeast-1",
+      "IDENTITY_POOL_ID": "ap-southeast-1:107cbe36-8fe5-40a8-8028-806d6d92113b",
+      "USER_POOL_ID": "ap-southeast-1_JoWfCMHKj",
+      "USER_POOL_WEB_CLIENT_ID": "j7nsif36fs6dnd7dso6pcch9n"
     },
-    "DOCUMENTS_UPLOAD_BUCKET": {
-        "BUCKET_NAME": "",
-        "BUCKET_REGION": ""
+    "API": {
+      "DOCUMENT_METADATA_SERVICE_ENDPOINT": "https://n086goqzz9.execute-api.ap-southeast-1.amazonaws.com/prod/"
     }
+  },
+  "DOCUMENTS_UPLOAD_BUCKET": {
+    "BUCKET_NAME": "textractdocumentprocessin-documentsbucket9ec9deb9-1g3y0f9fwzdem",
+    "BUCKET_REGION": "ap-southeast-1"
+  }
 }
