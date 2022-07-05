@@ -5,6 +5,8 @@ import AWS from "aws-sdk";
 import axios from "axios";
 import logo from "./logo.png";
 import LinearProgressWithLabel from "./components/LinierProgressWithLabel";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
 
 import "reactjs-popup/dist/index.css";
 import {
@@ -79,6 +81,7 @@ class App extends Component {
       selectedFileName: "No file chosen",
       documentMetadataItems: [],
       modalOpen: false,
+      toasterOpen: false,
       detailDatabase: null,
       detailScan: null,
       tableBandingkan: [
@@ -114,6 +117,14 @@ class App extends Component {
 
   handleModalClose = () => {
     this.setState({ modalOpen: false });
+  };
+
+  handleToasterOpen = () => {
+    this.setState({ toasterOpen: true });
+  };
+
+  handleToasterClose = () => {
+    this.setState({ toasterOpen: false });
   };
 
   async getDataScanDetail(nib) {
@@ -219,7 +230,7 @@ class App extends Component {
           });
         })
         .promise();
-      this.setState({ uploadState: "Succeed" });
+      this.setState({ uploadState: "Succeed", toasterOpen: true });
     } catch (e) {
       console.log(e);
       this.setState({ uploadState: "Failed" });
@@ -393,6 +404,14 @@ class App extends Component {
               </div>
             </Fade>
           </Modal>
+
+          {/* Toaster */}
+          <Snackbar
+            open={this.state.toasterOpen}
+            autoHideDuration={3000}
+            onClose={this.handleToasterClose}
+            message="Dokumen berhasil diunggah!"
+          ></Snackbar>
         </ThemeProvider>
       </div>
     );
