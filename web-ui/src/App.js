@@ -72,6 +72,7 @@ class App extends Component {
     super(props);
     this.state = {
       progress: 0,
+      isUploadStart: false,
       selectedFile: null,
       uploadState: "Not Started",
       selectedFileName: "No file chosen",
@@ -199,6 +200,8 @@ class App extends Component {
       return;
     }
 
+    this.setState({ isUploadStart: true });
+
     var upload = new AWS.S3.ManagedUpload({
       params: {
         Body: file,
@@ -220,6 +223,8 @@ class App extends Component {
       console.log(e);
       this.setState({ uploadState: "Failed" });
     }
+
+    this.setState({ isUploadStart: false });
   };
 
   getDocumentMetadata = () => {
@@ -235,6 +240,10 @@ class App extends Component {
   refreshDocumentMetadata = async () => {
     const response = await this.getDocumentMetadata();
     this.setState({ documentMetadataItems: response });
+  };
+
+  progressUpload = (prog) => {
+    return <div>File Upload Progress is {prog} %</div>;
   };
 
   render() {
@@ -282,9 +291,12 @@ class App extends Component {
               >
                 Unggah Dokumen
               </Button>
-              <Typography variant="subtitle1">
-                File Upload Progress is {this.state.progress}% -{" "}
-                {this.state.uploadState}
+              <Typography variant="subtitle2">
+                {this.state.isUploadStart
+                  ? this.progressUpload(this.state.progress)
+                  : this.state.uploadState}
+
+                {/* File Upload Progress is {this.state.progress}% -{" "} */}
               </Typography>
             </Paper>
 
