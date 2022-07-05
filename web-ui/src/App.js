@@ -306,9 +306,7 @@ class App extends Component {
 
               {this.state.isUploadStart ? (
                 <LinearProgressWithLabel value={this.state.progress} />
-              ) : (
-                this.state.uploadState
-              )}
+              ) : null}
 
               <Typography variant="subtitle1">
                 {/* <LinearProgress variant="determinate" value={progress} /> */}
