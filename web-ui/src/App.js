@@ -3,13 +3,12 @@ import { withAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
 import { Auth, API } from "aws-amplify";
 import AWS from "aws-sdk";
 import axios from "axios";
-import Popup from "reactjs-popup";
+import logo from "./logo.png";
 
 import "reactjs-popup/dist/index.css";
 import {
   Backdrop,
   Fade,
-  Container,
   Table,
   TableBody,
   TableCell,
@@ -19,7 +18,6 @@ import {
   Button,
   Box,
   Paper,
-  Grid,
   Typography,
   AppBar,
   Toolbar,
@@ -27,26 +25,7 @@ import {
 } from "@material-ui/core";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { withStyles, ThemeProvider } from "@material-ui/core/styles";
-import ReactJson from "react-json-view";
-import { createTheme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
 import config from "./config.json";
-
-const styleModal = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 500,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
-const red = {
-  bgcolor: "red",
-};
 
 const styles = (theme) => ({
   root: {
@@ -69,12 +48,20 @@ const styles = (theme) => ({
   },
   title: {
     flexGrow: 1,
+    marginLeft: "10px",
   },
   modal: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },
+  table: {
+    minWidth: 650,
+  },
+  logo: {
+    width: "5%",
+  },
+  subTitle: { flex: "1 1 100%", color: "black" },
 });
 
 const s3DocumentsBucketName = config.DOCUMENTS_UPLOAD_BUCKET.BUCKET_NAME;
@@ -94,6 +81,17 @@ class App extends Component {
       detailScan: null,
       tableBandingkan: [
         "NIB",
+        "LUAS",
+        "HAK",
+        "DESA_KELURAHAN",
+        "KECAMATAN",
+        "KABUPATEN_KOTAMADYA",
+      ],
+
+      headers: [
+        "#",
+        "NIB",
+        "KOTAK",
         "LUAS",
         "HAK",
         "DESA_KELURAHAN",
@@ -154,51 +152,44 @@ class App extends Component {
     this.setState({ selectedFileName: e.target.files[0].name });
   };
 
-  bandingkan = () => {
-    alert('Nilai "Luas" berbeda dengan data di database dengan NIB yang sama');
-  };
-
   JsonDataDisplay = (JsonData) => {
+    const { classes } = this.props;
+
     const DisplayData = JsonData.map((info) => {
       return (
-        <tr>
-          <td>{info.NIB}</td>
-          <td>{info.KOTAK}</td>
-          <td>{info.LUAS}</td>
-          <td>{info.HAK}</td>
-          <td>{info.DESA_KELURAHAN}</td>
-          <td>{info.KECAMATAN}</td>
-          <td>{info.KABUPATEN_KOTAMADYA}</td>
-          <td>
-            <Button
-              onClick={() => this.handleModalOpen(info)}
-              // onClick={(event) => this.handleModalOpen(event, info)}
-              variant="contained"
-            >
-              Tampilkan
-            </Button>
-          </td>
-        </tr>
+        <TableRow>
+          {this.state.headers.map((header, index) =>
+            header !== "#" ? (
+              <TableCell>{info[header]}</TableCell>
+            ) : (
+              <TableCell>
+                <Button
+                  onClick={() => this.handleModalOpen(info)}
+                  variant="contained"
+                >
+                  Tampilkan
+                </Button>
+              </TableCell>
+            )
+          )}
+        </TableRow>
       );
     });
 
     return (
       <div>
-        <table>
-          <thead>
-            <tr>
-              <th>NIB</th>
-              <th>Kotak</th>
-              <th>Luas</th>
-              <th>Hak</th>
-              <th>Desa/Kelurahan</th>
-              <th>Kecamatan</th>
-              <th>Kabupaten/Kotamadya</th>
-              <th>Perbandingan</th>
-            </tr>
-          </thead>
-          <tbody>{DisplayData}</tbody>
-        </table>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                {this.state.headers.map((header, index) => (
+                  <TableCell>{header.replace("_", "/")}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>{DisplayData}</TableBody>
+          </Table>
+        </TableContainer>
       </div>
     );
   };
@@ -254,8 +245,10 @@ class App extends Component {
         <ThemeProvider>
           <AppBar position="static" color="primary">
             <Toolbar>
+              <img src={logo} className={classes.logo} alt="logo" />
+
               <Typography variant="h6" className={classes.title}>
-                AWS Textract Document Processing
+                BADAN PERTANAHAN NASIONAL
               </Typography>
               <Button
                 className={classes.button}
@@ -270,7 +263,9 @@ class App extends Component {
           </AppBar>
           <Box my={1}>
             <Paper className={classes.paper}>
-              <Typography variant="h6">Proses Dokumen</Typography>
+              <Typography variant="h6" className={classes.subTitle}>
+                PROSES DOKUMEN
+              </Typography>
               <Button
                 className={classes.button}
                 variant="contained"
@@ -285,7 +280,7 @@ class App extends Component {
                 color="primary"
                 onClick={() => this.uploadFile(this.state.selectedFile)}
               >
-                Upload Dokumen
+                Unggah Dokumen
               </Button>
               <Typography variant="subtitle1">
                 File Upload Progress is {this.state.progress}% -{" "}
@@ -294,10 +289,9 @@ class App extends Component {
             </Paper>
 
             <Paper className={classes.paper}>
-              <Typography variant="h4">
-                Hasil Ekstraksi Dokumen Tanah
+              <Typography variant="h6" className={classes.subTitle}>
+                HASIL EKSTRAKSI DOKUMEN TANAH
               </Typography>
-
               {this.JsonDataDisplay(this.state.documentMetadataItems)}
             </Paper>
           </Box>
@@ -318,7 +312,7 @@ class App extends Component {
             <Fade in={this.state.modalOpen}>
               <div className={classes.paperModal}>
                 <h2 id="transition-modal-title">
-                  PERBANDINGAN DATA HASIL UPLOAD DENGAN DATA YANG ADA DI
+                  PERBANDINGAN DATA HASIL UNGGAH DENGAN DATA YANG ADA DI
                   DATABASE DENGAN NIB YANG SAMA
                 </h2>
                 <TableContainer component={Paper}>
@@ -329,7 +323,7 @@ class App extends Component {
                           <b>DESKRIPSI</b>
                         </TableCell>
                         <TableCell align="left">
-                          <b>HASIL UPLOAD</b>
+                          <b>HASIL UNGGAH</b>
                         </TableCell>
                         <TableCell align="left">
                           <b>DATABASE</b>
@@ -340,7 +334,7 @@ class App extends Component {
                       {this.state.tableBandingkan.map((header, index) => (
                         <TableRow>
                           <TableCell>
-                            <b>{header.toUpperCase()}</b>
+                            <b>{header.toUpperCase().replace("_", "/")}</b>
                           </TableCell>
                           <TableCell align="left">
                             {this.state.detailScan === null
