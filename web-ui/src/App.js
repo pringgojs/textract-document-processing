@@ -4,6 +4,7 @@ import { Auth, API } from "aws-amplify";
 import AWS from "aws-sdk";
 import axios from "axios";
 import logo from "./logo.png";
+import LinearProgressWithLabel from "./components/LinierProgressWithLabel";
 
 import "reactjs-popup/dist/index.css";
 import {
@@ -74,7 +75,7 @@ class App extends Component {
       progress: 0,
       isUploadStart: false,
       selectedFile: null,
-      uploadState: "Not Started",
+      uploadState: "",
       selectedFileName: "No file chosen",
       documentMetadataItems: [],
       modalOpen: false,
@@ -168,7 +169,7 @@ class App extends Component {
                   onClick={() => this.handleModalOpen(info)}
                   variant="contained"
                 >
-                  Tampilkan
+                  Bandingkan
                 </Button>
               </TableCell>
             )
@@ -291,10 +292,18 @@ class App extends Component {
               >
                 Unggah Dokumen
               </Button>
-              <Typography variant="subtitle2">
-                {this.state.isUploadStart
+
+              {this.state.isUploadStart ? (
+                <LinearProgressWithLabel value={this.state.progress} />
+              ) : (
+                this.state.uploadState
+              )}
+
+              <Typography variant="subtitle1">
+                {/* <LinearProgress variant="determinate" value={progress} /> */}
+                {/* {this.state.isUploadStart
                   ? this.progressUpload(this.state.progress)
-                  : this.state.uploadState}
+                  : this.state.uploadState} */}
 
                 {/* File Upload Progress is {this.state.progress}% -{" "} */}
               </Typography>
