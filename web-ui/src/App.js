@@ -264,6 +264,7 @@ class App extends Component {
     return (
       <div className={classes.root}>
         <ThemeProvider>
+          {/* Appbar */}
           <AppBar position="static" color="primary">
             <Toolbar>
               <img src={logo} className={classes.logo} alt="logo" />
@@ -282,6 +283,8 @@ class App extends Component {
               <AmplifySignOut />
             </Toolbar>
           </AppBar>
+
+          {/* Box */}
           <Box my={1}>
             <Paper className={classes.paper}>
               <Typography variant="h6" className={classes.subTitle}>
@@ -403,7 +406,7 @@ class App extends Component {
             </Fade>
           </Modal>
 
-          {/* Toaster */}
+          {/* Snackbar */}
           <Snackbar
             open={this.state.toasterOpen}
             autoHideDuration={3000}
